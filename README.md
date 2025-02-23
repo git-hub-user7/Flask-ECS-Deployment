@@ -13,15 +13,14 @@
 ## 📂 Project Structure
 ```bash
 flask-ecs-project/
-├── app/                  # Flask application
-│   ├── app.py            # Main application logic
-│   └── requirements.txt  # Python dependencies
+├── app/                     # Flask application
+│    └──app.py               # Main application logic   
 ├── infrastructure/
-│   └── ecs-task-def.json # ECS task definition
-├── screenshots/          # Deployment documentation
-├── Dockerfile            # Container configuration
-├── .dockerignore         # Files excluded from Docker build
-└── README.md             # Project documentation
+│   └─ task-definition.json  # ECS task definition
+├── screenshots/             # Deployment documentation
+├── Dockerfile               # Container configuration
+├── .dockerignore            # Files excluded from Docker build
+└── README.md                # Project documentation
 ```
 ---
 ## 📸 Step-by-Step Visual Walkthrough
@@ -94,8 +93,8 @@ flask-ecs-project/
 ---
 # Clone repository
 ```bash
-git clone https://github.com/git-hub-user7/flask-ecs-project.git
-cd flask-ecs-project
+git clone https://github.com/git-hub-user7/ Flask-ECS-Deployment.git
+cd  Flask-ECS-Deployment
 ```
 
 # Install dependencies
@@ -105,37 +104,111 @@ pip install -r requirements.txt
 
 # Build Docker image
 ```bash
-docker build -t my-flask-app .
+docker build -t my-app .
 ```
 # Run locally
 ```bash
-docker run -p 5000:5000 my-flask-app
+docker run -p 5000:5000 my-app
 ```
 ☁️ AWS Deployment Steps
-Create ECR Repository
+Step-1: Create ECR Repository
 
 ```bash
-aws ecr create-repository --repository-name my-flask-app
+aws ecr create-repository --repository-name my-app
 ```
-Push Docker Image to ECR
+Step-2: Push Docker Image to ECR
 
 ```bash
 aws ecr get-login-password | docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com
 
-docker tag my-flask-app:latest <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/my-flask-app:latest
+docker tag my-app:latest <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/my-flask-app:latest
 
-docker push <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/my-flask-app:latest
+docker push <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/my-app:latest
 ```
-Create ECS Cluster
+Step-3: Create ECS Cluster
 
 ```bash
 aws ecs create-cluster --cluster-name my-app-cluster
 ```
-Create Task Definition (Update ecs-task-def.json)
+Step-4: Configure Task Definition
 
-Configure Security Groups
+Create 'task-definition.json'
 
-Launch ECS Service
+```json
+{
+    "family": "my-app-task",
+    "networkMode": "awsvpc",
+    "executionRoleArn": "arn:aws:iam::381492283896:role/ecsTaskExecutionRole",
+    "containerDefinitions": [
+        {
+            "name": "my-app-container",
+            "image": "381492283896.dkr.ecr.us-east-1.amazonaws.com/my-app:latest",
+            "memory": 512,
+            "cpu": 256,
+            "essential": true,
+            "portMappings": [
+                {
+                    "containerPort": 5000,
+                    "hostPort": 5000,
+                    "protocol": "tcp"
+                }
+            ]
+        }
+    ],
+    "requiresCompatibilities": ["FARGATE"],
+    "cpu": "256",
+    "memory": "512"
+}
+
+```
+
+Step-5: Register the task:
+
+```bash
+aws ecs register-task-definition --cli-input-json file://task-definition.json  
+```
+
+Step-6: Configure Networking (VPC & Security Groups)
+
+Find your default VPC and subnet:
+
+```bash
+aws ec2 describe-vpcs --query "Vpcs[?IsDefault].VpcId" --output text
+aws ec2 describe-subnets --query "Subnets[*].SubnetId"
+```
+
+Step-7: Find your security group and allow port 5000:
+
+```bash
+aws ec2 describe-security-groups --query "SecurityGroups[*].GroupId"
+aws ec2 authorize-security-group-ingress --group-id <SECURITY_GROUP_ID> --protocol tcp --port 5000 --cidr 0.0.0.0/0
+```
+
+Step-8: Launch ECS Service
+
+```bash
+aws ecs create-service --cluster my-app-cluster --service-name my-flask-service --task-definition my-flask-app-task --desired-count 1 --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[<SUBNET_ID>],securityGroups=[<SECURITY_GROUP_ID>],assignPublicIp='ENABLED'}"
+
+```
+Step-9: Get Public IP of the Running Task
+
+Find the Task ARN:
+```bash
+aws ecs list-tasks --cluster my-app-cluster --query "taskArns[0]" --output text
+```
+
+Step-10: Find the Network Interface ID (ENI):
+
+```bash
+aws ecs describe-tasks --cluster my-app-cluster --tasks <TASK_ARN> --query "tasks[*].attachments[*].details[?name=='networkInterfaceId'].value"
+```
+
+Step-11: Find the Public IP:
+```bash
+aws ec2 describe-network-interfaces --network-interface-ids <ENI_ID> --query "NetworkInterfaces[*].Association.PublicIp" --output text
+```
+✅ Open http://<PUBLIC_IP>:5000 in your browser. 
+---
 
 📚 Learning Outcomes
 ---
