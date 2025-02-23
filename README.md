@@ -1,4 +1,4 @@
-# 🚀 Flask App Deployment on AWS ECS usingFargate | DevOps Project
+# 🚀 Flask App Deployment on AWS ECS using Fargate
 
 ---
 
