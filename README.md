@@ -10,7 +10,20 @@
 - **IaC** (Infrastructure as Code) concepts
 
 ---
-
+## 📂 Project Structure
+```bash
+flask-ecs-project/
+├── app/                  # Flask application
+│   ├── app.py            # Main application logic
+│   └── requirements.txt  # Python dependencies
+├── infrastructure/
+│   └── ecs-task-def.json # ECS task definition
+├── screenshots/          # Deployment documentation
+├── Dockerfile            # Container configuration
+├── .dockerignore         # Files excluded from Docker build
+└── README.md             # Project documentation
+```
+---
 ## 📸 Step-by-Step Visual Walkthrough
 
 ### 1. Local Flask Application
@@ -23,10 +36,16 @@
 
 ### 3. AWS ECR Repository
 ![ECR Repository](screenshots/3-ecr-repo.png)  
+*Creating an Elastic Container Registry Repository*
+![ECR Repository](screenshots/3.1-ecr-repo.png)  
+*Pushing the docker image to Elastic Container Registry*
+![ECR Repository](screenshots/3.2-ecr-repo.png)  
 *Container image stored in Elastic Container Registry*
 
 ### 4. ECS Cluster Configuration
 ![ECS Cluster](screenshots/4-ecs-cluster.png)  
+*creating an ECS cluster*
+![ECS Cluster](screenshots/4.1-ecs-cluster.png)  
 *ECS cluster dashboard showing running services*
 
 ### 5. Task Definition Setup
@@ -119,15 +138,16 @@ Configure Security Groups
 Launch ECS Service
 
 📚 Learning Outcomes
-Containerized applications using Docker
-
-Implemented cloud infrastructure on AWS
-
-Configured IAM roles and security policies
-
-Managed container orchestration with ECS
-
-Practiced infrastructure-as-code principles
+---
+## Containerized applications using Docker
+---
+## Implemented cloud infrastructure on AWS
+---
+## Configured IAM roles and security policies
+---
+## Managed container orchestration with ECS
+---
+## Practiced infrastructure-as-code principles
 
 🤝 Connect with Me
 Let's discuss cloud technologies and career opportunities!
