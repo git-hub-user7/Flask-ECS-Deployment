@@ -282,15 +282,15 @@ aws ec2 describe-network-interfaces --network-interface-ids <ENI_ID> --query "Ne
 
 📚 Learning Outcomes
 ---
-# ✅ Containerized applications using Docker
+**✅ Containerized applications using Docker**
 
-# ✅ Implemented cloud infrastructure on AWS
+**✅ Implemented cloud infrastructure on AWS**
 
-# ✅ Configured IAM roles and security policies
+**✅ Configured IAM roles and security policies**
 
-# ✅ Managed container orchestration with ECS
+**✅ Managed container orchestration with ECS**
 
-# ✅ Practiced infrastructure-as-code principles
+**✅ Practiced infrastructure-as-code principles**
 
 🤝 Connect with Me
 Let's discuss cloud technologies and career opportunities!
