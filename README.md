@@ -26,38 +26,80 @@ flask-ecs-project/
 ## 📸 Step-by-Step Visual Walkthrough
 
 ### 1. Local Flask Application
+
+---
+
+![Local Flask App](screenshots/local-flask.png)  
+*Code for a simple Flask Application*
+
+---
+
+![Local Flask App](screenshots/dockerfile.png)  
+*Code for Dockerfile in the project root*
+
+---
+
 ![Local Flask App](screenshots/1-local-flask.png)  
 *Flask app running locally at `localhost:5000`*
 
+---
+
 ### 2. Docker Build Process
+
+---
+
 ![Docker Build](screenshots/2-docker-build.png)  
 *Building Docker image with successful output*
 
+---
+
 ### 3. AWS ECR Repository
+
+---
+
 ![ECR Repository](screenshots/3-ecr-repo.png)  
 *Creating an Elastic Container Registry Repository*
+
+---
+
 ![ECR Repository](screenshots/3.1-ecr-repo.png)  
 *Pushing the docker image to Elastic Container Registry*
+
+---
+
 ![ECR Repository](screenshots/3.2-ecr-repo.png)  
 *Container image stored in Elastic Container Registry*
+
+---
 
 ### 4. ECS Cluster Configuration
 ![ECS Cluster](screenshots/4-ecs-cluster.png)  
 *creating an ECS cluster*
+
+---
+
 ![ECS Cluster](screenshots/4.1-ecs-cluster.png)  
 *ECS cluster dashboard showing running services*
+
+---
 
 ### 5. Task Definition Setup
 ![Task Definition](screenshots/5-task-definition.png)  
 *Fargate task configuration in AWS console*
 
+---
+
 ### 6. Security Group Rules
 ![Security Group](screenshots/6-security-group.png)  
 *Port 5000 open in inbound rules*
 
+---
+
 ### 7. Running Service Details
 ![ECS Service](screenshots/7-ecs-service.png)  
 *Service details showing healthy tasks*
+
+---
 
 ### 8. Production Deployment
 ![Live Deployment](screenshots/8-live-app.png)  
@@ -110,13 +152,13 @@ docker build -t my-app .
 ```bash
 docker run -p 5000:5000 my-app
 ```
-☁️ AWS Deployment Steps
-Step-1: Create ECR Repository
+### ☁️ AWS Deployment Steps
+## Step-1: Create ECR Repository
 
 ```bash
 aws ecr create-repository --repository-name my-app
 ```
-Step-2: Push Docker Image to ECR
+## Step-2: Push Docker Image to ECR
 
 ```bash
 aws ecr get-login-password | docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com
@@ -125,14 +167,44 @@ docker tag my-app:latest <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/my-flask-ap
 
 docker push <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/my-app:latest
 ```
-Step-3: Create ECS Cluster
+
+## Step-3: Create an IAM Role for ECS Execution
+
+To allow ECS to pull the image from ECR and execute tasks, create an IAM Role with permissions.
+
+1️⃣ Create a Role for ECS:
+
+```bash
+aws iam create-role \
+  --role-name ecsTaskExecutionRole \
+  --assume-role-policy-document file://<(echo '{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": { "Service": "ecs-tasks.amazonaws.com" },
+        "Action": "sts:AssumeRole"
+      }
+    ]
+  }')
+```
+
+2️⃣ Attach Required Policies:
+
+```bash 
+aws iam attach-role-policy \
+  --role-name ecsTaskExecutionRole \
+  --policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+```
+
+## Step-4: Create ECS Cluster
 
 ```bash
 aws ecs create-cluster --cluster-name my-app-cluster
 ```
-Step-4: Configure Task Definition
+## Step-5: Configure Task Definition
 
-Create 'task-definition.json'
+Create `task-definition.json`
 
 ```json
 {
@@ -162,13 +234,13 @@ Create 'task-definition.json'
 
 ```
 
-Step-5: Register the task:
+## Step-6: Register the task:
 
 ```bash
 aws ecs register-task-definition --cli-input-json file://task-definition.json  
 ```
 
-Step-6: Configure Networking (VPC & Security Groups)
+## Step-7: Configure Networking (VPC & Security Groups)
 
 Find your default VPC and subnet:
 
@@ -176,38 +248,38 @@ Find your default VPC and subnet:
 aws ec2 describe-vpcs --query "Vpcs[?IsDefault].VpcId" --output text
 aws ec2 describe-subnets --query "Subnets[*].SubnetId"
 ```
-
-Step-7: Find your security group and allow port 5000:
+Find your security group and allow port 5000:
 
 ```bash
 aws ec2 describe-security-groups --query "SecurityGroups[*].GroupId"
 aws ec2 authorize-security-group-ingress --group-id <SECURITY_GROUP_ID> --protocol tcp --port 5000 --cidr 0.0.0.0/0
 ```
 
-Step-8: Launch ECS Service
+## Step-9: Create an ECS Service
 
 ```bash
 aws ecs create-service --cluster my-app-cluster --service-name my-flask-service --task-definition my-flask-app-task --desired-count 1 --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[<SUBNET_ID>],securityGroups=[<SECURITY_GROUP_ID>],assignPublicIp='ENABLED'}"
 
 ```
-Step-9: Get Public IP of the Running Task
+## Step-10: Get Public IP of the Running Task
 
 Find the Task ARN:
 ```bash
 aws ecs list-tasks --cluster my-app-cluster --query "taskArns[0]" --output text
 ```
 
-Step-10: Find the Network Interface ID (ENI):
+
+## Step-11: Find the Network Interface ID (ENI):
 
 ```bash
 aws ecs describe-tasks --cluster my-app-cluster --tasks <TASK_ARN> --query "tasks[*].attachments[*].details[?name=='networkInterfaceId'].value"
 ```
 
-Step-11: Find the Public IP:
+## Step-11: Find the Public IP:
 ```bash
 aws ec2 describe-network-interfaces --network-interface-ids <ENI_ID> --query "NetworkInterfaces[*].Association.PublicIp" --output text
 ```
-✅ Open http://<PUBLIC_IP>:5000 in your browser. 
+Open http://<PUBLIC_IP>:5000 in your browser. 
 ---
 
 📚 Learning Outcomes
