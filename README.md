@@ -10,6 +10,10 @@
 - **IaC** (Infrastructure as Code) concepts
 
 ---
+## 🚀 Live Demo
+**🔗  Copy and paste this link in your browser to view the containerized flask application deployed on AWS ECS with Fargate: `http://18.232.137.173:5000`**
+
+---
 ## 📂 Project Structure
 ```bash
 flask-ecs-project/
