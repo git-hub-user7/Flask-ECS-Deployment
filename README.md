@@ -10,10 +10,6 @@
 - **IaC** (Infrastructure as Code) concepts
 
 ---
-## 🚀 Live Demo
-**🔗  Copy and paste this link in your browser to view the containerized flask application deployed on AWS ECS with Fargate: `http://18.232.137.173:5000`**
-
----
 ## 📂 Project Structure
 ```bash
 flask-ecs-project/
@@ -281,7 +277,8 @@ aws ecs describe-tasks --cluster my-app-cluster --tasks <TASK_ARN> --query "task
 Find the Public IP:
 ```bash
 aws ec2 describe-network-interfaces --network-interface-ids <ENI_ID> --query "NetworkInterfaces[*].Association.PublicIp" --output text
-``` 
+```
+Finally, ppen http://<PUBLIC_IP>:5000 in your browser
 ---
 
 📚 Learning Outcomes
@@ -296,9 +293,11 @@ aws ec2 describe-network-interfaces --network-interface-ids <ENI_ID> --query "Ne
 
 **✅ Practiced infrastructure-as-code principles**
 
+**Note: ⚠️ This project is deployed on AWS ECS (Fargate). The live demo link for this project connot be created to reduce AWS costs.**  
+
 🤝 Connect with Me
 Let's discuss cloud technologies and career opportunities!
 
-📧 Email: dhwarakesh99@gmail.com
-💼 LinkedIn: Dhwarakesh Srinivasan
-📂 GitHub: git-hub-user7
+📧 [Email: ](dhwarakesh99@gmail.com)
+💼 [LinkedIn: ](https://www.linkedin.com/in/dhwarakesh-srinivasan-361719292/)
+📂 [GitHub: ](https://github.com/git-hub-user7)
