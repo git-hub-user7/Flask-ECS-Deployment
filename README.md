@@ -149,7 +149,7 @@ docker build -t my-app .
 docker run -p 5000:5000 my-app
 ```
 ---
-### ☁️ AWS Deployment Steps
+# ☁️ AWS Deployment Steps
 
 ## 📦 Step-1: Create ECR Repository
 
