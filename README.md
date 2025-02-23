@@ -45,7 +45,7 @@ flask-ecs-project/
 ### 2. Docker Build Process
 
 ![Docker Build](screenshots/2-docker-build.png)  
-*Building Docker image with successful output*
+*Built Docker image with successful output*
 
 ---
 
@@ -53,12 +53,12 @@ flask-ecs-project/
 
 
 ![ECR Repository](screenshots/3-ecr-repo.png)  
-*Creating an Elastic Container Registry Repository*
+*Created an Elastic Container Registry Repository*
 
 ---
 
 ![ECR Repository](screenshots/3.1-ecr-repo.png)  
-*Pushing the docker image to Elastic Container Registry*
+*Pushed the docker image to Elastic Container Registry*
 
 ---
 
@@ -69,12 +69,12 @@ flask-ecs-project/
 
 ### 4. ECS Cluster Configuration
 ![ECS Cluster](screenshots/4-ecs-cluster.png)  
-*creating an ECS cluster*
+*Created an ECS cluster*
 
 ---
 
 ![ECS Cluster](screenshots/4.1-ecs-cluster.png)  
-*ECS cluster dashboard showing running services*
+*ECS cluster dashboard showing running service*
 
 ---
 
